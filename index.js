@@ -9,6 +9,50 @@ app.get('/', (req, res) => {
   res.send('Doctor on the way..')
 })
 
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = `mongodb+srv://${process.env.VITE_USER}:${process.env.VITE_PASS}@cluster0.ctx1etf.mongodb.net/?retryWrites=true&w=majority`;
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    // await client.connect();
+
+
+    const Doctor = client.db('TEETH-DOCTOR').collection('doctor')
+    const services = client.db('TEETH-DOCTOR').collection('services')
+    // Send a ping to confirm a successful connection
+
+
+    app.get('/doctor', async (req, res) => {
+      const result = await Doctor.find().toArray()
+      res.send(result)
+    })
+
+    app.get('/services',async(req,res)=>{
+      const result=await services.find().toArray()
+      res.send(result)
+    })
+
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    // await client.close();
+  }
+}
+run().catch(console.dir);
+
 
 
 app.listen(port)
+
+

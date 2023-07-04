@@ -29,16 +29,31 @@ async function run() {
 
     const Doctor = client.db('TEETH-DOCTOR').collection('doctor')
     const services = client.db('TEETH-DOCTOR').collection('services')
+    const reviews = client.db('TEETH-DOCTOR').collection('reviews')
+    const booking=client.db('TEETH-DOCTOR').collection('appointment')
     // Send a ping to confirm a successful connection
 
-
+    // getting doctor data
     app.get('/doctor', async (req, res) => {
       const result = await Doctor.find().toArray()
       res.send(result)
     })
-
+    // getting services data
     app.get('/services',async(req,res)=>{
       const result=await services.find().toArray()
+      res.send(result)
+    })
+
+    //get reviews data
+    app.get('/reviews',async(req,res)=>{
+      const result=await reviews.find().toArray()
+      res.send(result)
+    })
+
+    // added appointment 
+    app.post('/Patients',async(req,res)=>{
+      const data=req.body
+      const result=await booking.insertOne(data)
       res.send(result)
     })
 

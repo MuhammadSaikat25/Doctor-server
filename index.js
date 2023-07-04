@@ -30,7 +30,8 @@ async function run() {
     const Doctor = client.db('TEETH-DOCTOR').collection('doctor')
     const services = client.db('TEETH-DOCTOR').collection('services')
     const reviews = client.db('TEETH-DOCTOR').collection('reviews')
-    const booking=client.db('TEETH-DOCTOR').collection('appointment')
+    const appointment=client.db('TEETH-DOCTOR').collection('appointment')
+    const user=client.db('TEETH-DOCTOR').collection('user')
     // Send a ping to confirm a successful connection
 
     // getting doctor data
@@ -53,7 +54,13 @@ async function run() {
     // added appointment 
     app.post('/Patients',async(req,res)=>{
       const data=req.body
-      const result=await booking.insertOne(data)
+      const result=await appointment.insertOne(data)
+      res.send(result)
+    })
+
+    app.post('/user',async(req,res)=>{
+      const data=req.body
+      const result=await user.insertOne(data)
       res.send(result)
     })
 

@@ -2,7 +2,8 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const jwt=require('jsonwebtoken')
+const jwt=require('jsonwebtoken');
+const e = require('express');
 const port = process.env.PORT || 5000
 app.use(cors())
 app.use(express.json())
@@ -91,6 +92,13 @@ async function run() {
       const result = await user.find().toArray()
       res.send(result)
     })
+    // get a single user by email
+    app.get('/user/:email',async(req,res)=>{
+      const email=req.params.email 
+      const query={email:email}
+      const result=await user.findOne(query)
+      res.send(result)
+    })
 
     // make user to admin
     app.patch('/user/admin/:id',async(req,res)=>{
@@ -102,6 +110,18 @@ async function run() {
         }
       }
       const result =await user.updateOne(filter,update)
+      res.send(result)
+    })
+
+    // get admin user
+    app.get('/user/admin/:email', VerifyJwt,async(req,res)=>{
+      const email=req.params.email
+      if(req.decoded.email!==email){
+         res.send({admin:false})
+      }
+      const query={email:email}
+      const user=await user.findOne(query)
+      const result={admin:user?.role==='admin'}
       res.send(result)
     })
 

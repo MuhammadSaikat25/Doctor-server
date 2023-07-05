@@ -11,6 +11,23 @@ app.get('/', (req, res) => {
   res.send('Doctor on the way..')
 })
 
+// VerifyJwt
+const VerifyJwt=(req,res,next)=>{
+  const Authorization=req.headers.authorization 
+  if(!Authorization){
+    return res.status(401).send({error:true,message:'unauthorized access'})
+  }
+  const token=Authorization.split(' ')[1]
+  jwt.verify(token,process.env.VITE_JWT,(error,decoded)=>{
+    if(error){
+      return res.status(401).send({error:true,message:'unauthorized access'})
+    }
+    req.decoded=decoded
+    next()
+  })
+}
+
+
 const uri = `mongodb+srv://${process.env.VITE_USER}:${process.env.VITE_PASS}@cluster0.ctx1etf.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -70,7 +87,7 @@ async function run() {
       res.send(result)
     })
     //get all user
-    app.get('/users', async (req, res) => {
+    app.get('/users',VerifyJwt, async (req, res) => {
       const result = await user.find().toArray()
       res.send(result)
     })

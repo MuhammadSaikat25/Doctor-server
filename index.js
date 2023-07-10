@@ -70,6 +70,7 @@ async function run() {
       const token= jwt.sign(user,process.env.VITE_JWT,{expiresIn:'1d'})
       res.send(token)
     })
+
     const VerifyAdmin=async(req,res,next)=>{
       const email=req.decoded.email
       const query={email:email}
@@ -145,11 +146,19 @@ async function run() {
     })
 
     //delete a doctor
-    app.delete('/delete/doctor/:id',async(req,res)=>{
+    app.delete('/delete/doctor/:id', async(req,res)=>{
       const id=req.params.id
       const data={_id:new ObjectId(id)}
       const result=await Doctor.deleteOne(data)
       res.send(result)
+    })
+
+    app.delete('/delete/user/:id',async(req,res)=>{
+      const id=req.params.id 
+      const data={_id:new ObjectId(id)}
+      const result=await user.deleteOne(data)
+      res.send(result)
+      console.log(id)
     })
 
     await client.db("admin").command({ ping: 1 });

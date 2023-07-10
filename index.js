@@ -44,8 +44,6 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
-
-
     const Doctor = client.db('TEETH-DOCTOR').collection('doctor')
     const services = client.db('TEETH-DOCTOR').collection('services')
     const reviews = client.db('TEETH-DOCTOR').collection('reviews')
@@ -126,21 +124,17 @@ async function run() {
     })
 
     // get admin user
-    app.get('/user/admin/:email', VerifyJwt,async(req,res)=>{
+    app.get('/user/admin/:email',async(req,res)=>{
       const email=req.params.email
-      if(req.decoded.email!==email){
-         res.send({admin:false})
-      }
       const query={email:email}
-      const user=await user.findOne(query)
-      const result={admin:user?.role==='admin'}
+      const users=await user.findOne(query)
+      const result={admin:users?.role==='admin'}
       res.send(result)
     })
 
     // added a Doctor 
     app.post('/added/Doctor',VerifyJwt,VerifyAdmin, async(req,res)=>{
       const DoctorData=req.body
-      console.log(DoctorData)
       const result=await Doctor.insertOne(DoctorData)
       res.send(result)
     })
@@ -153,12 +147,20 @@ async function run() {
       res.send(result)
     })
 
+    // delete a user
     app.delete('/delete/user/:id',async(req,res)=>{
       const id=req.params.id 
       const data={_id:new ObjectId(id)}
       const result=await user.deleteOne(data)
       res.send(result)
-      console.log(id)
+      
+    })
+
+    app.get('/user/appointment/:email',async(req,res)=>{
+      const email=req.params.email
+      const query={email:email}
+      const result=await appointment.find(query).toArray()
+      res.send(result)
     })
 
     await client.db("admin").command({ ping: 1 });

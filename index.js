@@ -58,6 +58,7 @@ async function run() {
       const result = await Doctor.find().toArray()
       res.send(result)
     })
+    
     // getting services data
     app.get('/services', async (req, res) => {
       const result = await services.find().toArray()
@@ -90,12 +91,13 @@ async function run() {
       const result = await appointment.insertOne(data)
       res.send(result)
     })
-
+    // added user
     app.post('/user', async (req, res) => {
       const data = req.body
       const result = await user.insertOne(data)
       res.send(result)
     })
+
     //get all user
     app.get('/users',VerifyJwt,VerifyAdmin ,async (req, res) => {
       const result = await user.find().toArray()
@@ -110,7 +112,7 @@ async function run() {
     })
 
     // make user to admin
-    app.patch('/user/admin/:id',async(req,res)=>{
+    app.patch('/user/admin/:id', async(req,res)=>{
       const id=req.params.id 
       const filter={_id:new ObjectId(id)}
       const update={
@@ -139,6 +141,14 @@ async function run() {
       const DoctorData=req.body
       console.log(DoctorData)
       const result=await Doctor.insertOne(DoctorData)
+      res.send(result)
+    })
+
+    //delete a doctor
+    app.delete('/delete/doctor/:id',async(req,res)=>{
+      const id=req.params.id
+      const data={_id:new ObjectId(id)}
+      const result=await Doctor.deleteOne(data)
       res.send(result)
     })
 

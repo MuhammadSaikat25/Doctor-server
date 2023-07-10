@@ -69,6 +69,15 @@ async function run() {
       const token= jwt.sign(user,process.env.VITE_JWT,{expiresIn:'1d'})
       res.send(token)
     })
+    const VerifyAdmin=async(req,res,next)=>{
+      const email=req.decoded.email
+      const query={email:email}
+      const admin=await user.findOne(query)
+      if(admin?.role!=='admin'){
+        return res.status(404).send({error:true,message:'forbidden access'})
+      }
+      next()
+    }
     //get reviews data
     app.get('/reviews', async (req, res) => {
       const result = await reviews.find().toArray()
@@ -88,12 +97,12 @@ async function run() {
       res.send(result)
     })
     //get all user
-    app.get('/users',VerifyJwt, async (req, res) => {
+    app.get('/users',VerifyJwt,VerifyAdmin ,async (req, res) => {
       const result = await user.find().toArray()
       res.send(result)
     })
     // get a single user by email
-    app.get('/user/:email',async(req,res)=>{
+    app.get('/user/:email', async(req,res)=>{
       const email=req.params.email 
       const query={email:email}
       const result=await user.findOne(query)
@@ -122,6 +131,14 @@ async function run() {
       const query={email:email}
       const user=await user.findOne(query)
       const result={admin:user?.role==='admin'}
+      res.send(result)
+    })
+
+    // added a Doctor 
+    app.post('/added/Doctor',VerifyJwt,VerifyAdmin, async(req,res)=>{
+      const DoctorData=req.body
+      console.log(DoctorData)
+      const result=await Doctor.insertOne(DoctorData)
       res.send(result)
     })
 

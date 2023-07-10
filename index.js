@@ -155,7 +155,7 @@ async function run() {
       res.send(result)
       
     })
-
+    // get user booking
     app.get('/user/appointment/:email',async(req,res)=>{
       const email=req.params.email
       const query={email:email}
@@ -163,6 +163,12 @@ async function run() {
       res.send(result)
     })
 
+    app.delete('/delete/booking/:id',async(req,res)=>{
+      const id=req.params.id 
+      const query={_id:new ObjectId(id)}
+      const result=await appointment.deleteOne(query)
+      res.send(result)
+    })
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {

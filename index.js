@@ -51,12 +51,6 @@ async function run() {
     const user = client.db('TEETH-DOCTOR').collection('user')
     // Send a ping to confirm a successful connection
 
-    // getting doctor data
-    app.get('/doctor', async (req, res) => {
-      const result = await Doctor.find().toArray()
-      res.send(result)
-    })
-    
     // getting services data
     app.get('/services', async (req, res) => {
       const result = await services.find().toArray()
@@ -132,10 +126,24 @@ async function run() {
       res.send(result)
     })
 
+    // getting doctor data
+    app.get('/doctor', async (req, res) => {
+      const result = await Doctor.find().toArray()
+      res.send(result)
+    })
+
+    //get a single doctor
+    app.get('/getDoctor/:id',async(req,res)=>{
+      const id=req.params.id 
+      const query={_id: new ObjectId(id)}
+      const result=await Doctor.findOne(query)
+      res.send(result)
+    })
     // added a Doctor 
-    app.post('/added/Doctor',VerifyJwt,VerifyAdmin, async(req,res)=>{
-      const DoctorData=req.body
-      const result=await Doctor.insertOne(DoctorData)
+    app.post('/AddedDoctor',async(req,res)=>{
+      const Data=req.body
+      const result=await Doctor.insertOne(Data)
+      console.log(Data)
       res.send(result)
     })
 
@@ -162,7 +170,7 @@ async function run() {
       const result=await appointment.find(query).toArray()
       res.send(result)
     })
-
+    // delete user booking
     app.delete('/delete/booking/:id',async(req,res)=>{
       const id=req.params.id 
       const query={_id:new ObjectId(id)}
